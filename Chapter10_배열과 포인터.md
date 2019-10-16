@@ -140,3 +140,174 @@ pb : 17692784
 pb - pa : 2
 앞에 있는 배열 요소의 값 출력 : 20
 ````
+
+## 10-2. 배열을 처리하는 함수
+#### 배열의 값을 출력하는 함수
+- 배열을 처리하는 함수에 필요한 것은 배열의 주소
+````C
+#include <stdio.h>
+
+void print_ary(int *pa);                                    // 함수 선언
+
+int main(void) {
+
+	int ary[5] = { 10, 20, 30, 40, 50};
+
+	print_ary(ary);                                     // 배열명을 주고 함수 호출
+
+	return 0;
+}
+
+void print_ary(int *pa) {                                   // 매개변수로 포인터 선언
+	int i;
+
+	for (i = 0; i < 5; i++) {
+		printf("%d ", pa[i]);                   // pa로 배열 요소 표현식 사용
+	}
+}
+````
+````C
+10 20 30 40 50
+````
+#### 배열 요소의 개수가 다른 배열도 출력하는 함수
+- ary2의 size 대신 sizeof(ary2)/sizeof(ary2[0]) 써도 됨
+````C
+#include <stdio.h>
+
+void print_ary(int *pa, int size);
+
+int main(void) {
+
+	int ary1[5] = { 10, 20, 30, 40, 50};                 // 배열 요소의 개수가 5개인 배열
+	int ary2[7] = { 10, 20, 30, 40, 50, 60, 70 };    // 요소의 개수가 7개인 배열 
+
+	print_ary(ary1, 5);                                     // ary1 배열 출력, 배열 요소의 개수 전달
+	printf("\n");
+	print_ary(ary2, 7);                                     // ary2 배열 출력, 배열 요소의 개수 전달
+
+	return 0;
+}
+
+void print_ary(int *pa, int size) {             // 배열명과 배열 요소의 개수를 받는 매개변수 선언
+	int i;
+
+	for (i = 0; i < size; i++) {             // size의 값에 따라 반복 횟수 결정
+		printf("%d ", pa[i]);
+	}
+}
+````
+````C
+10 20 30 40 50
+10 20 30 40 50 60 70
+````
+#### 배열에 값을 입력하는 함수
+- 실수 배열에 값을 입력하는 함수와 최댓값을 찾는 함수
+````C
+#include <stdio.h>
+
+void input_ary(double *pa, int size);
+double find_max(double *pa, int size);
+
+int main(void) {
+
+	double ary[5];
+	double max;
+	int size = sizeof(ary) / sizeof(ary[0]);
+
+	input_ary(ary, size);
+	max = find_max(ary, size); 
+	printf("배열의 최댓값 : %.1lf\n", max);
+
+	return 0;
+}
+
+void input_ary(double *pa, int size) {
+	int i;
+
+	printf("%d개의 실수값 입력 : ", size);
+	for (i = 0; i < size; i++) {
+		scanf_s("%lf", pa + i, sizeof(pa + i)); 
+	}
+}
+
+double find_max(double *pa, int size) {
+	double max;
+	int i;
+
+	max = pa[0];
+	for (i = 1; i < size; i++) {
+		if (pa[i] > max) {
+			max = pa[i];
+		}
+	}
+
+	return max;
+}
+````
+````C
+5개의 실수값 입력 : 3.4 0.5 1.7 5.2 2.0
+배열의 최댓값 : 5.2
+````
+
+## 도전 실전 예제 : 로또 번호 생성 프로그램
+1~45 중에 6개의 서로 다른 수를 배열에 입력하고 출력합니다. 입력한 수가 이미 저장된 수와 같으면 에러 메시지를 출력하고 다시 입력합니다.다음 함수의 선언과 정의를 참고하고 빈 부분을 채워 완성합니다.
+
+1) 번호를 받음
+2) 1~45사이의 숫자가 아니면 다시 번호를 받음
+3) 중복된 번호이면 다시 번호를 받음
+````C
+#include <stdio.h>
+
+void input_nums(int *lotto_nums);
+void print_nums(int *lotto_nums);
+
+int main(void) {
+
+	int lotto_nums[6];
+
+	input_nums(lotto_nums);
+	print_nums(lotto_nums);
+
+	return 0;
+}
+
+void input_nums(int *lotto_nums) {
+	
+	int i, j;
+
+	for (i = 0; i < 6; i++) {
+		printf("번호 입력 : ");
+		scanf_s("%d", lotto_nums + i, sizeof(lotto_nums + i));
+		if ((*(lotto_nums + i) > 45) | (*(lotto_nums + i) < 0)) {
+			printf("1부터 45사이의 숫자로 입력해주세요.\n");
+			i = i - 1;
+		}
+		for (j = 0; j < i; j++) {
+			if (*(lotto_nums + i) == *(lotto_nums + j)) {
+				printf("같은 번호가 있습니다!\n");
+				i = i - 1;
+			}		
+		}
+	}
+}
+
+void print_nums(int *lotto_nums) {
+	int i;
+
+	printf("로또 번호 : ");
+	for (i = 0; i < 6; i++) {
+		printf("%d ",*(lotto_nums+i));
+	}
+}
+````
+````C
+번호 입력 : 3
+번호 입력 : 7
+번호 입력 : 15
+번호 입력 : 3
+같은 번호가 있습니다!
+번호 입력 : 22
+번호 입력 : 35
+번호 입력 : 40
+로또 번호 : 3 7 15 22 35 40
+````
